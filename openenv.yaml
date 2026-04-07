@@ -1,0 +1,2 @@
+entrypoint: python inference.py
+framework: custom
