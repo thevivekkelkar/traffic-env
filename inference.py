@@ -1,3 +1,9 @@
+import os
+
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+MODEL_NAME = os.getenv("MODEL_NAME", "baseline")
+HF_TOKEN = os.getenv("HF_TOKEN")
+
 import random
 from traffic_env import TrafficEnvironment
 
