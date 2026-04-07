@@ -1,1 +1,5 @@
 entrypoint: python inference.py
+
+env:
+  name: traffic-env
+  description: Traffic signal control using RL
