@@ -1,45 +1,20 @@
-import os
-
-API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
-MODEL_NAME = os.getenv("MODEL_NAME", "baseline")
-HF_TOKEN = os.getenv("HF_TOKEN")
-
-import random
+from fastapi import FastAPI
 from traffic_env import TrafficEnvironment
 
-def greedy_agent(state):
-    return state.index(max(state))
+app = FastAPI()
 
-def run():
-    env = TrafficEnvironment()
+env = TrafficEnvironment()
+
+@app.post("/reset")
+def reset():
     state = env.reset()
-    print("Using Greedy Baseline Agent")
-    print("[START] task=traffic env=traffic model=baseline")
+    return {"state": state}
 
-    step = 0
-    rewards = []
-
-    done = False
-    while not done:
-        action = greedy_agent(state)
-        next_state, reward, done = env.step(action)
-
-        step += 1
-        rewards.append(reward)
-
-        print(f"[STEP] step={step} action={action} reward={reward:.2f} done={str(done).lower()} error=null")
-
-        state = env.state()
-
-    max_cars = 30
-    num_lanes = 4
-    max_steps = 50
-
-    worst = -(max_cars * num_lanes * max_steps)
-    score = (sum(rewards) - worst) / (0 - worst)
-    score = max(0.0, min(1.0, score))
-
-    print(f"[END] success=true steps={step} score={score:.2f} rewards={','.join([f'{r:.2f}' for r in rewards])}")
-
-if __name__ == "__main__":
-    run()
+@app.post("/step")
+def step(action: int):
+    next_state, reward, done = env.step(action)
+    return {
+        "state": next_state,
+        "reward": reward,
+        "done": done
+    }
